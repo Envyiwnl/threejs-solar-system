@@ -1,0 +1,11 @@
+{
+  "name": "threejs-solar-system",
+  "version": "1.0.0",
+  "description": "3D Solar System Simulation with Three.js",
+  "scripts": {
+    "start": "live-server --open=./index.html"
+  },
+  "dependencies": {
+    "three": "^0.152.2"
+  }
+}

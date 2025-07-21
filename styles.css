@@ -1,0 +1,86 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; }
+#controls { position: absolute; top: 10px; left: 10px; z-index: 10; background: rgba(255,255,255,0.8); padding: 10px; border-radius: 4px; }
+#webgl-canvas { display: block; width: 100%; height: 100%; }
+
+/* Container */
+#controls {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(30, 30, 40, 0.8);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  color: #eee;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 220px;
+}
+
+.my-control {
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+}
+
+/* Dropdown */
+#controls select#planet-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: #2b2b38 url('data:image/svg+xml;utf8,<svg fill="%23eee" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 12px center;
+  background-size: 16px;
+  border: 1px solid #555;
+  border-radius: 6px;
+  padding: 8px 32px 8px 12px;
+  font-size: 1rem;
+  color: #eee;
+  cursor: pointer;
+}
+
+/* Slider wrapper */
+#controls #slider-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Slider label */
+#controls #slider-container label {
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+/* Range input */
+#controls #slider-container input[type="range"] {
+  width: 100%;
+  height: 6px;
+  background: #444;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Thumb */
+#controls #slider-container input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #ffcc00;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 4px rgba(0,0,0,0.5);
+}
+#controls #slider-container input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #ffcc00;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 4px rgba(0,0,0,0.5);
+}
