@@ -54,3 +54,5 @@ WebGL errors: if you see “WebGL context could not be created,” try disabling
 Module import errors: ensure you’re running via a local server (npm start), not file://.
 
 Textures not loading: confirm all images live under assets/textures/ and your paths in planets.js match exactly.
+
+Live Demo: https://fastidious-concha-02da98.netlify.app/
