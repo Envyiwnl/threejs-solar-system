@@ -1,26 +1,71 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; }
-#controls { position: absolute; top: 10px; left: 10px; z-index: 10; background: rgba(255,255,255,0.8); padding: 10px; border-radius: 4px; }
-#webgl-canvas { display: block; width: 100%; height: 100%; }
+/* Reset & Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+body {
+  background: var(--bg-page);
+  color: var(--fg-text);
+}
 
-/* Container */
+/* CSS Variables for Theming */
+:root {
+  /* Dark-theme defaults */
+  --bg-page:       #111;
+  --fg-text:       #eee;
+  --panel-bg:      rgba(30,30,40,0.8);
+  --accent:        #ffcc00;
+  --accent-hover:  #ffd633;
+  --spacing-sm:    8px;
+  --spacing-md:    16px;
+  --radius:        6px;
+  --font-base:     'Segoe UI', Roboto, sans-serif;
+}
+
+body[data-theme="light"] {
+  /* Light-theme overrides */
+  --bg-page:       #f5f5f5;
+  --fg-text:       #222;
+  --panel-bg:      rgba(245,245,245,0.9);
+  --accent:        #0066cc;
+  --accent-hover:  #005bb5;
+}
+
+/* Canvas */
+#webgl-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Controls Panel */
 #controls {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  background: rgba(30, 30, 40, 0.8);
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-family: 'Segoe UI', Roboto, sans-serif;
-  color: #eee;
+  top: var(--spacing-md);
+  left: var(--spacing-md);
+  z-index: 10;
+  background: var(--panel-bg);
+  padding: var(--spacing-md);
+  border-radius: calc(var(--radius) * 1.5);
+  color: var(--fg-text);
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--spacing-md);
   width: 220px;
 }
 
-.my-control {
+/* Consolidated form-reset */
+.my-control,
+#controls select#planet-select,
+#controls input[type="range"] {
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
@@ -28,24 +73,23 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: sans-seri
 
 /* Dropdown */
 #controls select#planet-select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background: #2b2b38 url('data:image/svg+xml;utf8,<svg fill="%23eee" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 12px center;
+  background: var(--panel-bg)
+              url('data:image/svg+xml;utf8,<svg fill="%23eee" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>')
+              no-repeat right var(--spacing-md) center;
   background-size: 16px;
   border: 1px solid #555;
-  border-radius: 6px;
-  padding: 8px 32px 8px 12px;
+  border-radius: var(--radius);
+  padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) var(--spacing-sm);
   font-size: 1rem;
-  color: #eee;
+  color: var(--fg-text);
   cursor: pointer;
 }
 
-/* Slider wrapper */
+/* Slider container */
 #controls #slider-container {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--spacing-sm);
 }
 
 /* Slider label */
@@ -54,7 +98,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: sans-seri
   color: #ccc;
 }
 
-/* Range input */
+/* Range input track */
 #controls #slider-container input[type="range"] {
   width: 100%;
   height: 6px;
@@ -64,23 +108,107 @@ html, body { width: 100%; height: 100%; overflow: hidden; font-family: sans-seri
   cursor: pointer;
 }
 
-/* Thumb */
-#controls #slider-container input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
+/* Slider thumb */
+#controls #slider-container input[type="range"]::-webkit-slider-thumb,
+#controls #slider-container input[type="range"]::-moz-range-thumb {
   width: 16px;
   height: 16px;
-  background: #ffcc00;
+  background: var(--accent);
   border: none;
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 0 0 4px rgba(0,0,0,0.5);
 }
-#controls #slider-container input[type="range"]::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  background: #ffcc00;
+
+/* Tooltip */
+#tooltip {
+  position: absolute;
+  display: none;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  transform: translate(10px, 10px);
+  z-index: 100;
+}
+
+/* Global Speed Controls */
+#global-speed-controls {
+  position: absolute;
+  bottom: var(--spacing-md);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: var(--spacing-md);
+  z-index: 10;
+}
+
+#global-speed-controls button {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius);
   border: none;
-  border-radius: 50%;
+  background: var(--panel-bg);
+  color: var(--fg-text);
   cursor: pointer;
-  box-shadow: 0 0 4px rgba(0,0,0,0.5);
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+}
+
+#global-speed-controls button:hover {
+  background: var(--accent-hover);
+  color: var(--fg-text-hover, #000);
+}
+
+/* Theme Switch Container */
+.theme-switch {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+  z-index: 20;
+}
+
+/* Hide default checkbox */
+.theme-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider track */
+.theme-switch .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  background: var(--panel-bg);
+  border-radius: 34px;
+  transition: background 0.3s ease;
+}
+
+/* The knob */
+.theme-switch .slider::before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background: var(--fg-text);
+  border-radius: 50%;
+  transition: transform 0.3s ease, background 0.3s ease;
+}
+
+/* Checked state */
+.theme-switch input:checked + .slider {
+  background: var(--accent);
+}
+.theme-switch input:checked + .slider::before {
+  transform: translateX(22px);
+  background: var(--bg-page);
 }

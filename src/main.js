@@ -1,6 +1,13 @@
 import * as THREE from "../node_modules/three/build/three.module.js";
 import { PLANETS } from "./planets.js";
+import WebGL from '../node_modules/three/examples/jsm/capabilities/WebGL.js';
 
+// Checking for availability of WebGl for production purpose
+
+if ( ! WebGL.isWebGLAvailable() ) {
+  document.body.appendChild( WebGL.getWebGLErrorMessage() );
+  throw new Error( 'WebGL not supported' );
+}
 // TextureLoader
 const loader = new THREE.TextureLoader();
 
@@ -21,8 +28,32 @@ camera.lookAt(0, 0, 0);
 
 let originalFov = camera.fov;
 
+if (window._threeRenderer) {
+  window._threeRenderer.forceContextLoss();
+  window._threeRenderer.dispose();
+  window._threeRenderer.domElement = null;
+}
+
+
 const renderer = new THREE.WebGLRenderer({ antialias: true, canvas });
 renderer.setSize(window.innerWidth, window.innerHeight);
+
+// 1) Grab the checkbox
+const toggle = document.getElementById('theme-toggle');
+
+// 2) Restore saved preference
+const saved = localStorage.getItem('theme');
+if (saved) {
+  document.body.dataset.theme = saved;
+  toggle.checked = (saved === 'light');
+}
+
+// 3) On change, flip the theme
+toggle.addEventListener('change', () => {
+  const isLight = toggle.checked;
+  document.body.dataset.theme = isLight ? 'light' : '';
+  localStorage.setItem('theme', isLight ? 'light' : '');
+});
 
 // Background Stars
 (() => {
@@ -130,6 +161,38 @@ PLANETS.forEach((p) => {
   }
 
   planetPivots[p.name] = { pivot, mesh, speed: p.speed };
+});
+
+const tooltip = document.createElement('div');
+tooltip.id = 'tooltip';
+document.body.appendChild(tooltip);
+
+// On mouse move over the canvas, raycast and show/hide tooltip
+canvas.addEventListener('mousemove', event => {
+  // map to normalized device coords
+  mouse.x =  (event.clientX / canvas.clientWidth ) * 2 - 1;
+  mouse.y = -(event.clientY / canvas.clientHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+
+  const meshes     = Object.values(planetPivots).map(o => o.mesh);
+  const intersects = raycaster.intersectObjects(meshes);
+  if (intersects.length > 0) {
+    const mesh = intersects[0].object;
+    const [planetName] = Object.entries(planetPivots)
+      .find(([, obj]) => obj.mesh === mesh);
+
+    tooltip.style.display = 'block';
+    tooltip.innerText     = planetName;
+    tooltip.style.left    = event.clientX + 'px';
+    tooltip.style.top     = event.clientY + 'px';
+  } else {
+    tooltip.style.display = 'none';
+  }
+});
+
+// Also hide it when the pointer leaves the canvas
+canvas.addEventListener('mouseleave', () => {
+  tooltip.style.display = 'none';
 });
 
 // speed control and UI binding
@@ -283,8 +346,8 @@ options.forEach(opt => {
     padding:       '8px 16px',
     borderRadius:  '6px',
     border:        'none',
-    background:    '#444',
-    color:         '#fff',
+    background:    'var(--panel-bg)',
+    color:         'var(--fg-text)',
     cursor:        'pointer',
     fontSize:      '0.9rem'
   });
